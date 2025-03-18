@@ -8,6 +8,8 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final TextInputType keyboardType;
   final Widget? suffixIcon;
+  final bool readOnly;
+  final VoidCallback? onTap; // Tambahkan onTap
 
   const CustomTextField({
     Key? key,
@@ -17,6 +19,8 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
     this.suffixIcon,
+    this.readOnly = false, // Tambahkan default false
+    this.onTap, // Tambahkan onTap
   }) : super(key: key);
 
   @override
@@ -37,6 +41,8 @@ class CustomTextField extends StatelessWidget {
           controller: controller,
           obscureText: obscureText,
           keyboardType: keyboardType,
+          readOnly: readOnly, // Tambahkan readOnly
+          onTap: onTap, // Tambahkan onTap
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(color: AppColors.textHint),
