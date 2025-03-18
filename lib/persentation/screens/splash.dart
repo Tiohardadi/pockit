@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:pockit/persentation/constant/app_colors.dart';
+import 'package:pockit/persentation/screens/login.dart';
 
 class SplashScreenWrapper extends StatefulWidget {
   const SplashScreenWrapper({Key? key}) : super(key: key);
@@ -25,8 +27,9 @@ class _SplashScreenWrapperState extends State<SplashScreenWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return _initialized ? const SplashScreen() : 
-      Scaffold(backgroundColor: const Color(0xFF4285F4));
+    return _initialized
+        ? const SplashScreen()
+        : Scaffold(backgroundColor: AppColors.primary);
   }
 }
 
@@ -37,7 +40,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   late AnimationController _appearController;
   late Animation<double> _initialSizeAnimation;
   late Animation<double> _positionAnimation;
@@ -46,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
   late Animation<Color?> _colorAnimation;
-  
+
   bool _showLogo = false;
   bool _isNavigating = false;
   bool _startGrowth = false;
@@ -55,40 +59,31 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    
+
     _appearController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
 
     _initialSizeAnimation = Tween<double>(begin: 0, end: 30).animate(
-      CurvedAnimation(
-        parent: _appearController,
-        curve: Curves.easeOut,
-      ),
+      CurvedAnimation(parent: _appearController, curve: Curves.easeOut),
     );
 
     _positionAnimation = Tween<double>(begin: 0.15, end: 0.5).animate(
-      CurvedAnimation(
-        parent: _appearController,
-        curve: Curves.easeOutBack,
-      ),
+      CurvedAnimation(parent: _appearController, curve: Curves.easeOutBack),
     );
-    
+
     _growthController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     );
 
     _growthAnimation = Tween<double>(begin: 30, end: 250).animate(
-      CurvedAnimation(
-        parent: _growthController,
-        curve: Curves.easeOutCubic,
-      ),
+      CurvedAnimation(parent: _growthController, curve: Curves.easeOutCubic),
     );
-    
+
     _colorAnimation = ColorTween(
-      begin: const Color(0xFF4285F4),
+      begin: AppColors.primary,
       end: Colors.white,
     ).animate(
       CurvedAnimation(
@@ -106,12 +101,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 1.15), weight: 1),
       TweenSequenceItem(tween: Tween<double>(begin: 1.15, end: 1.0), weight: 1),
     ]).animate(
-      CurvedAnimation(
-        parent: _pulseController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
-    
+
     Future.delayed(const Duration(milliseconds: 50), () {
       if (mounted) {
         _appearController.forward();
@@ -146,7 +138,22 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   _isNavigating = true;
                 });
                 _pulseController.stop();
-                Navigator.of(context).pushReplacementNamed('/login');
+                Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder:
+                        (context, animation, secondaryAnimation) =>
+                            LoginScreen(),
+                    transitionsBuilder: (
+                      context,
+                      animation,
+                      secondaryAnimation,
+                      child,
+                    ) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                  ),
+                );
               }
             });
           }
@@ -166,17 +173,22 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([_appearController, _growthController, _pulseController]),
+      animation: Listenable.merge([
+        _appearController,
+        _growthController,
+        _pulseController,
+      ]),
       builder: (context, child) {
         double circleSize = _initialSizeAnimation.value;
         if (_startGrowth) {
           circleSize = _growthAnimation.value;
         }
-        
+
         double pulseScale = _startPulse ? _pulseAnimation.value : 1.0;
-        
+
         return Scaffold(
-          backgroundColor: _startGrowth ? _colorAnimation.value : const Color(0xFF4285F4),
+          backgroundColor:
+              _startGrowth ? _colorAnimation.value : AppColors.primary,
           body: Stack(
             children: [
               Positioned.fill(
@@ -214,9 +226,3 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     );
   }
 }
-
-// Helper functions
-double sqrt(double x) => math.sqrt(x);
-double exp(double x) => math.exp(x);
-double sin(double x) => math.sin(x);
-double cos(double x) => math.cos(x);

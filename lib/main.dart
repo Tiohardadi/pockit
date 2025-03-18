@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pockit/persentation/screens/login.dart';
+import 'package:pockit/persentation/screens/register.dart';
 import 'package:pockit/persentation/screens/splash.dart';
 
 void main() {
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
       home: const SplashScreenWrapper(),
       routes: {
         '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
       },
     );
   }
