@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pockit/persentation/screens/edit_transaksi.dart';
+import 'package:pockit/persentation/constant/utils.dart';
+import 'package:intl/intl.dart';
 
 class Transaksi extends StatefulWidget {
   const Transaksi({super.key});
@@ -10,6 +13,7 @@ class Transaksi extends StatefulWidget {
 class _TransaksiState extends State<Transaksi> {
   final List<Map<String, dynamic>> transactions = [
     {
+      "id": 1,
       "Berita": "Makan Malam",
       "amount": 24000,
       "type": "expense",
@@ -18,6 +22,7 @@ class _TransaksiState extends State<Transaksi> {
       "pocket": "cash",
     },
     {
+      "id": 2,
       "Berita": "Nisa Bayar Utang",
       "amount": 24000,
       "type": "income",
@@ -26,6 +31,7 @@ class _TransaksiState extends State<Transaksi> {
       "pocket": "cash",
     },
     {
+      "id": 3,
       "Berita": "Makan Siang",
       "amount": 15000,
       "type": "expense",
@@ -36,9 +42,88 @@ class _TransaksiState extends State<Transaksi> {
   ];
 
   Map<String, bool> expandedState = {};
+  DateTime selectedDate = DateTime(2025, 4); // Default to April 2025
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      initialDatePickerMode: DatePickerMode.year, // Start with year selection
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Color(0xFF5383FF), // Header background color
+              onPrimary: Colors.white, // Header text color
+              onSurface: Colors.black, // Calendar text color
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+
+  String _getFormattedMonth() {
+    return DateFormat('MMMM yyyy').format(selectedDate);
+  }
+
+  // Filter transactions based on selected month and year
+  List<Map<String, dynamic>> _getFilteredTransactions() {
+    final selectedMonth = selectedDate.month;
+    final selectedYear = selectedDate.year;
+    
+    return transactions.where((transaction) {
+      try {
+        // Assuming date format is "Day, DD Month YYYY"
+        final parts = transaction['date'].split(', ');
+        final dateParts = parts[1].split(' ');
+        
+        // Indonesian month names
+        final monthNames = {
+          'Januari': 1, 'Februari': 2, 'Maret': 3, 'April': 4,
+          'Mei': 5, 'Juni': 6, 'Juli': 7, 'Agustus': 8,
+          'September': 9, 'Oktober': 10, 'November': 11, 'Desember': 12
+        };
+        
+        final day = int.parse(dateParts[0]);
+        final month = monthNames[dateParts[1]] ?? 1;
+        final year = int.parse(dateParts[2]);
+        
+        return month == selectedMonth && year == selectedYear;
+      } catch (e) {
+        return false;
+      }
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(Utils);
+    final filteredTransactions = _getFilteredTransactions();
+    
+    // Calculate summary for the selected month
+    int totalIncome = 0;
+    int totalExpense = 0;
+    
+    for (var transaction in filteredTransactions) {
+      if (transaction['type'] == 'income') {
+        totalIncome += transaction['amount'] as int;
+      } else {
+        totalExpense += transaction['amount'] as int;
+      }
+    }
+    
+    int balance = totalIncome - totalExpense;
+    
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -72,7 +157,7 @@ class _TransaksiState extends State<Transaksi> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Summary Card
+            // Summary Card with Date Picker
             Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
@@ -82,20 +167,29 @@ class _TransaksiState extends State<Transaksi> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'April 2025',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  InkWell(
+                    onTap: () => _selectDate(context),
+                    child: Row(
+                      children: [
+                        Text(
+                          _getFormattedMonth(),
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.calendar_month, size: 20),
+                      ],
+                    ),
                   ),
                   SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildSummaryItem('Rp40,000', 'Incomes'),
-                      _buildSummaryItem('Rp313,000', 'Expenses'),
+                      _buildSummaryItem('Rp${totalIncome.toString()}', 'Incomes'),
+                      _buildSummaryItem('Rp${totalExpense.toString()}', 'Expenses'),
                       _buildSummaryItem(
-                        '-Rp273,000',
+                        '${balance >= 0 ? '' : '-'}Rp${balance.abs().toString()}',
                         'Balance',
-                        isNegative: true,
+                        isNegative: balance < 0,
                       ),
                     ],
                   ),
@@ -104,35 +198,42 @@ class _TransaksiState extends State<Transaksi> {
             ),
             SizedBox(height: 16),
             Expanded(
-              child: ListView.builder(
-                itemCount: _groupTransactions().length,
-                itemBuilder: (context, index) {
-                  String date = _groupTransactions().keys.elementAt(index);
-                  List<Map<String, dynamic>> dayTransactions =
-                      _groupTransactions()[date]!;
+              child: filteredTransactions.isEmpty 
+                ? Center(
+                    child: Text(
+                      'Tidak ada transaksi untuk bulan ini',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _groupTransactions(filteredTransactions).length,
+                    itemBuilder: (context, index) {
+                      String date = _groupTransactions(filteredTransactions).keys.elementAt(index);
+                      List<Map<String, dynamic>> dayTransactions =
+                          _groupTransactions(filteredTransactions)[date]!;
 
-                  return Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            expandedState[date] =
-                                !(expandedState[date] ?? false);
-                          });
-                        },
-                        child: _buildDayHeader(date, dayTransactions),
-                      ),
-                      if (expandedState[date] ?? false)
-                        ...dayTransactions
-                            .map(
-                              (transaction) =>
-                                  _buildTransactionItem(transaction),
-                            )
-                            .toList(),
-                    ],
-                  );
-                },
-              ),
+                      return Column(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                expandedState[date] =
+                                    !(expandedState[date] ?? false);
+                              });
+                            },
+                            child: _buildDayHeader(date, dayTransactions),
+                          ),
+                          if (expandedState[date] ?? false)
+                            ...dayTransactions
+                                .map(
+                                  (transaction) =>
+                                      _buildTransactionItem(transaction),
+                                )
+                                .toList(),
+                        ],
+                      );
+                    },
+                  ),
             ),
           ],
         ),
@@ -210,65 +311,71 @@ class _TransaksiState extends State<Transaksi> {
 
   Widget _buildTransactionItem(Map<String, dynamic> transaction) {
     bool isExpense = transaction['type'] == 'expense';
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              color: isExpense ? Colors.red[50] : Colors.green[50],
-              borderRadius: BorderRadius.circular(8),
+    return GestureDetector(
+      onTap: () {
+        Utils.pushWithFade(context, EditTransaksi(transactionId: transaction['id']));
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: isExpense ? Colors.red[50] : Colors.green[50],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                isExpense ? Icons.arrow_upward : Icons.arrow_downward,
+                color: isExpense ? Colors.red : Colors.green,
+                size: 16,
+              ),
             ),
-            child: Icon(
-              isExpense ? Icons.arrow_upward : Icons.arrow_downward,
-              color: isExpense ? Colors.red : Colors.green,
-              size: 16,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    transaction['Berita'],
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    transaction['tag'],
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  transaction['Berita'],
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  '${isExpense ? '-' : '+'}Rp${transaction['amount']}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isExpense ? Colors.red : Colors.green,
+                  ),
                 ),
                 Text(
-                  transaction['tag'],
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  transaction['pocket'],
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${isExpense ? '-' : '+'}Rp${transaction['amount']}',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: isExpense ? Colors.red : Colors.green,
-                ),
-              ),
-              Text(
-                transaction['pocket'], // Menampilkan data pocket
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Map<String, List<Map<String, dynamic>>> _groupTransactions() {
+  Map<String, List<Map<String, dynamic>>> _groupTransactions([List<Map<String, dynamic>>? transactionList]) {
+    final List<Map<String, dynamic>> transactionsToGroup = transactionList ?? transactions;
     Map<String, List<Map<String, dynamic>>> groupedTransactions = {};
-    for (var transaction in transactions) {
+    for (var transaction in transactionsToGroup) {
       String date = transaction['date'] ?? 'Unknown Date';
       if (!groupedTransactions.containsKey(date)) {
         groupedTransactions[date] = [];
