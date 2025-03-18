@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pockit/persentation/components/custom_text_field.dart';
 import 'package:pockit/persentation/components/custom_button.dart';
 import 'package:pockit/persentation/constant/app_colors.dart';
+import 'package:pockit/persentation/constant/utils.dart';
 import 'package:pockit/persentation/screens/register.dart';
+import 'package:pockit/persentation/screens/transaksi.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -27,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF4285F4),
       body: NestedScrollView(
         headerSliverBuilder:
             (context, innerBoxIsScrolled) => [
@@ -168,7 +171,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                CustomButton(text: 'Masuk', onPressed: () {}),
+                CustomButton(text: 'Masuk', onPressed: () {
+                  Utils.pushReplacementWithFade(context, Transaksi());
+                }),
                 const SizedBox(height: 24),
                 Center(
                   child: Row(
@@ -180,25 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      RegisterScreen(),
-                              transitionsBuilder: (
-                                context,
-                                animation,
-                                secondaryAnimation,
-                                child,
-                              ) {
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: child,
-                                );
-                              },
-                            ),
-                          );
+                          Utils.pushReplacementWithFade(context, RegisterScreen());
                         },
                         child: Text(
                           'Daftar',

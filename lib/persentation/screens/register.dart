@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pockit/persentation/constant/app_colors.dart';
+import 'package:pockit/persentation/constant/utils.dart';
 import 'package:pockit/persentation/screens/login.dart';
 import 'package:pockit/persentation/components/custom_text_field.dart';
 import 'package:pockit/persentation/components/custom_button.dart';
@@ -31,7 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.transparent,
+      backgroundColor: const Color(0xFF4285F4),
       body: NestedScrollView(
         headerSliverBuilder:
             (context, innerBoxIsScrolled) => [
@@ -209,25 +210,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      LoginScreen(),
-                              transitionsBuilder: (
-                                context,
-                                animation,
-                                secondaryAnimation,
-                                child,
-                              ) {
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: child,
-                                );
-                              },
-                            ),
-                          );
+                          Utils.pushReplacementWithFade(context, RegisterScreen());
                         },
                         child: const Text(
                           'Masuk',
