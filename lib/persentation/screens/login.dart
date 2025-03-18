@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pockit/persentation/components/custom_text_field.dart';
 import 'package:pockit/persentation/components/custom_button.dart';
-import 'package:pockit/persentation/utils/app_colors.dart';
+import 'package:pockit/persentation/constant/app_colors.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
