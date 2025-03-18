@@ -45,7 +45,7 @@ class _TransaksiState extends State<Transaksi> {
           child: Row(
             children: [
               Image.asset(
-                'assets/images/LogoPutih.png',
+                'assets/images/logo_putih_appbar.png',
                 width: 100,
                 height: 25,
               ),

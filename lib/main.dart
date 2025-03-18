@@ -1,28 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:pockit/persentation/components/main_layout.dart';
 import 'package:pockit/persentation/screens/login.dart';
 import 'package:pockit/persentation/screens/register.dart';
-import 'package:pockit/persentation/screens/splash.dart';
-
+import 'package:pockit/persentation/screens/transaksi.dart';
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      systemNavigationBarColor: Color(0xFF4285F4),
-    ),
-  );
-
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]).then((_) {
-    runApp(const MyApp());
-  });
+  runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = [
+    const Transaksi(),
+  ];
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +34,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        primaryColor: const Color(0xFF4285F4),
-        scaffoldBackgroundColor: const Color(0xFF4285F4),
       ),
-      home: const SplashScreenWrapper(),
+      home: MainLayout(
+        child: _pages[_currentIndex],
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+      ),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
