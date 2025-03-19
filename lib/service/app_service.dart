@@ -43,6 +43,43 @@ class TransactionService {
       throw Exception('Terjadi kesalahan: $e');
     }
   }
+    Future<void> updateTransaction(AddTransactionEntities transaction, int balanceId) async {
+    final url = Uri.parse('https://83mbl26v-7777.asse.devtunnels.ms/api/v1/transaction/update/$balanceId');
+    try {
+      final response = await http.put(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(transaction.toJson()),
+      );
+      
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode != 200) {
+        throw Exception('Gagal menambahkan transaksi. Kode status: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Terjadi kesalahan: $e');
+    }
+  }
+    Future<void> deleteTransaction( int balanceId) async {
+    final url = Uri.parse('https://83mbl26v-7777.asse.devtunnels.ms/api/v1/transaction/delete/$balanceId');
+    try {
+      final response = await http.delete(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode != 200) {
+        throw Exception('Gagal menghapus transaksi. Kode status: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Terjadi kesalahan: $e');
+    }
+  }
   Future<List<TagEntities>> getTags() async {
     final url = Uri.parse('https://83mbl26v-7777.asse.devtunnels.ms/api/v1/tag');
     try {
