@@ -5,7 +5,10 @@ import 'package:pockit/model/pocket_entities.dart';
 import 'package:pockit/model/tag_entities.dart';
 import 'package:pockit/presentation/components/custom_button.dart';
 import 'package:pockit/presentation/components/custom_text_field.dart';
+import 'package:pockit/presentation/screens/transaksi.dart';
 import 'package:pockit/service/app_service.dart';
+import 'package:pockit/presentation/constant/utils.dart';
+
 
 class TambahTransaksi extends StatefulWidget {
   const TambahTransaksi({super.key});
@@ -104,8 +107,10 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
             TextButton(
               child: Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(); // Kembali ke halaman sebelumnya
+                Utils.pushWithFade(
+          context,
+          Transaksi(),
+        ); // Kembali ke halaman sebelumnya
               },
             ),
           ],
