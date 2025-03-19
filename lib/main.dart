@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pockit/persentation/screens/edit_transaksi.dart';
-import 'package:pockit/persentation/screens/login.dart';
-import 'package:pockit/persentation/screens/splitbill.dart';
-import 'package:pockit/persentation/screens/tambah_splitbill.dart';
-import 'package:pockit/persentation/screens/tambah_transaksi.dart';
-import 'package:pockit/persentation/screens/transaksi.dart';
+import 'package:pockit/presentation/screens/edit_transaksi.dart';
+import 'package:pockit/presentation/screens/login.dart';
+import 'package:pockit/presentation/screens/splitbill.dart';
+import 'package:pockit/presentation/screens/tambah_splitbill.dart';
+import 'package:pockit/presentation/screens/tambah_transaksi.dart';
+import 'package:pockit/presentation/screens/test.dart';
+import 'package:pockit/presentation/screens/transaksi.dart';
 
 void main() {
   runApp(const MyApp());
