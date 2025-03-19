@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pockit/persentation/components/main_layout.dart';
-import 'package:pockit/persentation/screens/login.dart';
-import 'package:pockit/persentation/screens/register.dart';
-import 'package:pockit/persentation/screens/transaksi.dart';
+import 'package:pockit/presentation/screens/login.dart';
+import 'package:pockit/presentation/screens/register.dart';
+import 'package:pockit/presentation/screens/home.dart';
+import 'package:pockit/presentation/screens/splash.dart';
+import 'package:pockit/utils/shared_prefs.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -15,15 +17,19 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int _currentIndex = 0;
+  bool isLoggedIn = false;
+  bool isLoading = true;
 
-  final List<Widget> _pages = [
-    const Transaksi(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    checkLoginStatus();
+  }
 
-  void _onTabTapped(int index) {
+  Future<void> checkLoginStatus() async {
+    isLoggedIn = await SharedPrefs.isUserLoggedIn();
     setState(() {
-      _currentIndex = index;
+      isLoading = false;
     });
   }
 
@@ -32,17 +38,14 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Pockit',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MainLayout(
-        child: _pages[_currentIndex],
-        currentIndex: _currentIndex,
-        onTap: _onTabTapped,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          :  const SplashScreenWrapper(),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
+        '/home': (context) => const HomeScreen(),
       },
     );
   }

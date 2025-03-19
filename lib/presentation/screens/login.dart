@@ -1,32 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:pockit/persentation/constant/app_colors.dart';
-import 'package:pockit/persentation/constant/utils.dart';
-import 'package:pockit/persentation/screens/login.dart';
-import 'package:pockit/persentation/components/custom_text_field.dart';
-import 'package:pockit/persentation/components/custom_button.dart';
+import 'package:pockit/presentation/components/custom_text_field.dart';
+import 'package:pockit/presentation/components/custom_button.dart';
+import 'package:pockit/presentation/constant/app_colors.dart';
+import 'package:pockit/presentation/constant/utils.dart';
+import 'package:pockit/presentation/screens/register.dart';
+import 'package:pockit/service/auth_service.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  final _nameController = TextEditingController();
+class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+  String _errorMessage = '';
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _login() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      final response = await AuthService.login(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+
+      if (response['success'] == true) {
+        await AuthService.saveUserData(response['data']);
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      } else {
+        setState(() {
+          _errorMessage = response['message'] ?? 'Login failed';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Connection error. Please try again.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -57,7 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                         ),
-  
+
                         Positioned(
                           top: -MediaQuery.of(context).size.width * 0.2,
                           left: -MediaQuery.of(context).size.width * 0.1,
@@ -99,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 24.0),
                                 child: Text(
-                                  'Register',
+                                  'Login',
                                   style: TextStyle(
                                     fontSize: 26,
                                     fontWeight: FontWeight.w900,
@@ -127,104 +164,94 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Selamat Datang!',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Isi data sesuai identitas diri anda',
-                  style: TextStyle(fontSize: 14, color: Colors.black54),
-                ),
-                const SizedBox(height: 32),
-                CustomTextField(
-                  controller: _nameController,
-                  labelText: 'Nama Lengkap',
-                  hintText: 'nama lengkap',
-                ),
-                const SizedBox(height: 24),
-                CustomTextField(
-                  controller: _emailController,
-                  labelText: 'Alamat Email',
-                  hintText: 'alamat email',
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 24),
-                CustomTextField(
-                  controller: _passwordController,
-                  labelText: 'Kata Sandi',
-                  hintText: 'Minimal 8 karakter',
-                  obscureText: _obscurePassword,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
-                      color: AppColors.textHint,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Jumpa Lagi!',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
                   ),
-                ),
-                const SizedBox(height: 24),
-                CustomTextField(
-                  controller: _confirmPasswordController,
-                  labelText: 'Konfirmasi Kata Sandi',
-                  hintText: 'Minimal 8 karakter',
-                  obscureText: _obscureConfirmPassword,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
-                      color: AppColors.textHint,
+                  const SizedBox(height: 8),
+                  Text(
+                    'Masuk dengan akun yang anda miliki',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscureConfirmPassword;
-                      });
-                    },
                   ),
-                ),
-                const SizedBox(height: 40),
-                CustomButton(text: 'Daftar', onPressed: () {}),
-                const SizedBox(height: 24),
-
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Sudah punya akun? ',
-                        style: TextStyle(color: Colors.grey),
+                  const SizedBox(height: 32),
+                  CustomTextField(
+                    controller: _emailController,
+                    labelText: 'Email',
+                    hintText: 'alamat email',
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 24),
+                  CustomTextField(
+                    controller: _passwordController,
+                    labelText: 'Kata Sandi',
+                    hintText: 'Minimal 8 karakter',
+                    obscureText: _obscurePassword,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                        color: AppColors.textHint,
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          Utils.pushReplacementWithFade(context, RegisterScreen());
-                        },
-                        child: const Text(
-                          'Masuk',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  CustomButton(
+                    text: 'Masuk',
+                    onPressed:
+                        !_isLoading
+                            ? () {
+                              _login();
+                            }
+                            : null,
+                  ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Belum punya akun? ',
+                          style: TextStyle(color: AppColors.textHint),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Utils.pushReplacementWithFade(
+                              context,
+                              RegisterScreen(),
+                            );
+                          },
+                          child: Text(
+                            'Daftar',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-              ],
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),

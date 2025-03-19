@@ -1,31 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:pockit/persentation/components/custom_text_field.dart';
-import 'package:pockit/persentation/components/custom_button.dart';
-import 'package:pockit/persentation/constant/app_colors.dart';
-import 'package:pockit/persentation/constant/utils.dart';
-import 'package:pockit/persentation/screens/register.dart';
-import 'package:pockit/persentation/screens/transaksi.dart';
+import 'package:pockit/presentation/constant/app_colors.dart';
+import 'package:pockit/presentation/constant/utils.dart';
+import 'package:pockit/presentation/screens/login.dart';
+import 'package:pockit/presentation/components/custom_text_field.dart';
+import 'package:pockit/presentation/components/custom_button.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-
+  
                         Positioned(
                           top: -MediaQuery.of(context).size.width * 0.2,
                           left: -MediaQuery.of(context).size.width * 0.1,
@@ -96,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 24.0),
                                 child: Text(
-                                  'Login',
+                                  'Register',
                                   style: TextStyle(
                                     fontSize: 26,
                                     fontWeight: FontWeight.w900,
@@ -127,26 +130,29 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Jumpa Lagi!',
+                const Text(
+                  'Selamat Datang!',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'Masuk dengan akun yang anda miliki',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                const Text(
+                  'Isi data sesuai identitas diri anda',
+                  style: TextStyle(fontSize: 14, color: Colors.black54),
                 ),
                 const SizedBox(height: 32),
                 CustomTextField(
+                  controller: _nameController,
+                  labelText: 'Nama Lengkap',
+                  hintText: 'nama lengkap',
+                ),
+                const SizedBox(height: 24),
+                CustomTextField(
                   controller: _emailController,
-                  labelText: 'Email',
+                  labelText: 'Alamat Email',
                   hintText: 'alamat email',
                   keyboardType: TextInputType.emailAddress,
                 ),
@@ -170,25 +176,44 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                 ),
-                const SizedBox(height: 40),
-                CustomButton(text: 'Masuk', onPressed: () {
-                  Utils.pushReplacementWithFade(context, Transaksi());
-                }),
                 const SizedBox(height: 24),
+                CustomTextField(
+                  controller: _confirmPasswordController,
+                  labelText: 'Konfirmasi Kata Sandi',
+                  hintText: 'Minimal 8 karakter',
+                  obscureText: _obscureConfirmPassword,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      color: AppColors.textHint,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscureConfirmPassword;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 40),
+                CustomButton(text: 'Daftar', onPressed: () {}),
+                const SizedBox(height: 24),
+
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Belum punya akun? ',
-                        style: TextStyle(color: AppColors.textHint),
+                      const Text(
+                        'Sudah punya akun? ',
+                        style: TextStyle(color: Colors.grey),
                       ),
                       GestureDetector(
                         onTap: () {
                           Utils.pushReplacementWithFade(context, RegisterScreen());
                         },
-                        child: Text(
-                          'Daftar',
+                        child: const Text(
+                          'Masuk',
                           style: TextStyle(
                             color: Colors.blue,
                             fontWeight: FontWeight.bold,

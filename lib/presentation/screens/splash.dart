@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
-import 'package:pockit/persentation/constant/app_colors.dart';
-import 'package:pockit/persentation/screens/login.dart';
+import 'package:pockit/presentation/constant/app_colors.dart';
+import 'package:pockit/presentation/screens/home.dart';
+import 'package:pockit/presentation/screens/login.dart';
+import 'package:pockit/utils/shared_prefs.dart';
+
 
 class SplashScreenWrapper extends StatefulWidget {
   const SplashScreenWrapper({Key? key}) : super(key: key);
@@ -119,12 +121,13 @@ class _SplashScreenState extends State<SplashScreen>
       }
     });
 
-    _growthController.addStatusListener((status) {
+    _growthController.addStatusListener((status) async {
       if (status == AnimationStatus.completed && mounted) {
         setState(() {
           _startPulse = true;
         });
         _pulseController.repeat();
+        bool isLoggedIn = await SharedPrefs.isUserLoggedIn();
 
         Future.delayed(const Duration(milliseconds: 300), () {
           if (mounted) {
@@ -142,8 +145,7 @@ class _SplashScreenState extends State<SplashScreen>
                   context,
                   PageRouteBuilder(
                     pageBuilder:
-                        (context, animation, secondaryAnimation) =>
-                            LoginScreen(),
+                        (context, animation, secondaryAnimation) => isLoggedIn ? HomeScreen() : LoginScreen(),
                     transitionsBuilder: (
                       context,
                       animation,

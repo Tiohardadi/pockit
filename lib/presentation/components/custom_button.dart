@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pockit/persentation/constant/app_colors.dart';
+import 'package:pockit/presentation/constant/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final void Function()? onPressed;
   final double height;
   final double borderRadius;
   final Color? backgroundColor; // Parameter opsional untuk warna background

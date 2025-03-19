@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pockit/persentation/components/custom_button.dart';
-import 'package:pockit/persentation/components/custom_text_field.dart';
+import 'package:pockit/presentation/components/custom_button.dart';
+import 'package:pockit/presentation/components/custom_text_field.dart';
 
-class EditTransaksi extends StatefulWidget {
-  final int transactionId; // Tambahkan parameter transactionId
-
-  const EditTransaksi({super.key, required this.transactionId});
+class TambahTransaksi extends StatefulWidget {
+  const TambahTransaksi({super.key});
 
   @override
-  State<EditTransaksi> createState() => _EditTransaksiState();
+  State<TambahTransaksi> createState() => _TambahTransaksiState();
 }
 
-class _EditTransaksiState extends State<EditTransaksi> {
+class _TambahTransaksiState extends State<TambahTransaksi> {
   final _kategoriController = TextEditingController();
   final _tanggalController = TextEditingController();
   final _jumlahController = TextEditingController();
@@ -26,13 +24,8 @@ class _EditTransaksiState extends State<EditTransaksi> {
 
   // Daftar pilihan kategori, tag, dan pocket
   final List<String> _kategoriList = ['Expense', 'Income'];
-  final List<String> _tagList = [
-    'Belanja',
-    'Hiburan',
-    'Pemasukan',
-    'Travelling',
-  ];
-  final List<String> _pocketList = ['cash', 'Gopay', 'BCA'];
+  final List<String> _tagList = ['Belanja', 'Hiburan', 'Pemasukan'];
+  final List<String> _pocketList = ['Cash', 'Gopay', 'BCA'];
 
   @override
   Widget build(BuildContext context) {
@@ -72,11 +65,10 @@ class _EditTransaksiState extends State<EditTransaksi> {
             children: [
               // Kategori - Teks Rata Kiri
               SizedBox(height: 16),
-              Text("Editing Transaction: ${widget.transactionId ?? 'Invalid ID'}"),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Edit Kategori",
+                  "Kategori",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ),
@@ -89,18 +81,16 @@ class _EditTransaksiState extends State<EditTransaksi> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                items:
-                    _kategoriList.map((kategori) {
-                      return DropdownMenuItem<String>(
-                        value: kategori,
-                        child: Text(kategori),
-                      );
-                    }).toList(),
+                items: _kategoriList.map((kategori) {
+                  return DropdownMenuItem<String>(
+                    value: kategori,
+                    child: Text(kategori),
+                  );
+                }).toList(),
                 onChanged: (value) {
                   setState(() {
                     _kategori = value;
-                    _kategoriController.text =
-                        value ?? ''; // Menyimpan pilihan kategori
+                    _kategoriController.text = value ?? ''; // Menyimpan pilihan kategori
                   });
                 },
               ),
@@ -163,13 +153,12 @@ class _EditTransaksiState extends State<EditTransaksi> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                items:
-                    _tagList.map((tag) {
-                      return DropdownMenuItem<String>(
-                        value: tag,
-                        child: Text(tag),
-                      );
-                    }).toList(),
+                items: _tagList.map((tag) {
+                  return DropdownMenuItem<String>(
+                    value: tag,
+                    child: Text(tag),
+                  );
+                }).toList(),
                 onChanged: (value) {
                   setState(() {
                     _tag = value;
@@ -195,18 +184,16 @@ class _EditTransaksiState extends State<EditTransaksi> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                items:
-                    _pocketList.map((pocket) {
-                      return DropdownMenuItem<String>(
-                        value: pocket,
-                        child: Text(pocket),
-                      );
-                    }).toList(),
+                items: _pocketList.map((pocket) {
+                  return DropdownMenuItem<String>(
+                    value: pocket,
+                    child: Text(pocket),
+                  );
+                }).toList(),
                 onChanged: (value) {
                   setState(() {
                     _pocket = value;
-                    _pocketController.text =
-                        value ?? ''; // Menyimpan pilihan pocket
+                    _pocketController.text = value ?? ''; // Menyimpan pilihan pocket
                   });
                 },
               ),
@@ -217,26 +204,8 @@ class _EditTransaksiState extends State<EditTransaksi> {
                 hintText: "berita",
               ),
               SizedBox(height: 100),
-
-              Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween, // Atur jarak antar tombol
-  children: [
-    Expanded(
-      child: CustomButton(
-        text: "Hapus",
-        onPressed: () {},
-        backgroundColor: Color(0xffF87272), // Warna merah untuk tombol Hapus
-      ),
-    ),
-    const SizedBox(width: 10), // Jarak antar tombol
-    Expanded(
-      child: CustomButton(
-        text: "Edit",
-        onPressed: () {},
-      ),
-    ),
-  ],
-)
+              
+              CustomButton(text: "Tambah", onPressed: () {})
             ],
           ),
         ),

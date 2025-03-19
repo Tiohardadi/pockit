@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
-import 'package:pockit/persentation/constant/app_colors.dart';
+import 'package:pockit/presentation/constant/app_colors.dart';
+import 'package:pockit/presentation/screens/splitbill.dart';
 
 class Navbar extends StatelessWidget {
   final int currentIndex;
@@ -10,13 +11,13 @@ class Navbar extends StatelessWidget {
     : super(key: key);
 
   final List<IconData> iconList = [
-    Icons.money,
+    Icons.attach_money,
     Icons.receipt_long,
     Icons.account_balance_wallet,
-    Icons.pie_chart,
+    Icons.person,
   ];
 
-  final List<String> labels = ["Transaksi", "Split Bill", "Pocket", "Report"];
+  final List<String> labels = ["Transaksi", "Split Bill", "Pocket", "Profile"];
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class Navbar extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Positioned(
-          top: -5, // Mengatur posisi bayangan agar pas
+          top: -5,
           left: 0,
           right: 0,
           child: Container(
@@ -32,8 +33,8 @@ class Navbar extends StatelessWidget {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.2), // Warna bayangan
-                  blurRadius: 20, // Efek blur bayangan
+                  color: AppColors.primary.withOpacity(0.2),
+                  blurRadius: 20,
                   spreadRadius: 5,
                 ),
               ],
@@ -51,7 +52,7 @@ class Navbar extends StatelessWidget {
                   iconList[index],
                   color: isActive ? AppColors.primary : Colors.grey,
                 ),
-                const SizedBox(height: 4), // Jarak antara icon dan teks
+                const SizedBox(height: 4),
                 Text(
                   labels[index],
                   style: TextStyle(
@@ -62,15 +63,38 @@ class Navbar extends StatelessWidget {
               ],
             );
           },
-          activeIndex: currentIndex,
+          activeIndex:
+              currentIndex < iconList.length
+                  ? currentIndex
+                  : 0, // Prevent index out of bounds
           gapLocation: GapLocation.center,
           notchSmoothness: NotchSmoothness.defaultEdge,
           backgroundColor: Colors.white,
           leftCornerRadius: 20,
           rightCornerRadius: 20,
-          // inactiveColor: Colors.grey,
-          // activeColor: AppColors.primary,
-          onTap: onTap,
+          onTap: (index) {
+            // First check if the index is valid to avoid errors
+            if (index >= 0 && index < iconList.length) {
+              // Call the parent's onTap callback yang akan memunculkan halaman yang sesuai
+              onTap(index);
+
+              // Tidak perlu navigasi manual, karena halaman akan ditampilkan melalui MainLayout
+              // Hapus kode navigasi ini:
+              // if (index == 1) {
+              //   try {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(builder: (context) => Splitbill()),
+              //     );
+              //   } catch (e) {
+              //     // Handle navigation error
+              //     ScaffoldMessenger.of(context).showSnackBar(
+              //       SnackBar(content: Text("Tidak dapat membuka Split Bill: ${e.toString()}")),
+              //     );
+              //   }
+              // }
+            }
+          },
         ),
       ],
     );

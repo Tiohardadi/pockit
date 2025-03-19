@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pockit/persentation/screens/edit_transaksi.dart';
-import 'package:pockit/persentation/constant/utils.dart';
+import 'package:pockit/presentation/screens/edit_transaksi.dart';
+import 'package:pockit/presentation/constant/utils.dart';
 import 'package:intl/intl.dart';
 
 class Transaksi extends StatefulWidget {

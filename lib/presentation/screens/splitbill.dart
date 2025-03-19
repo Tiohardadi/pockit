@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pockit/presentation/components/custom_button.dart';
+import 'package:pockit/presentation/constant/utils.dart';
+import 'package:pockit/presentation/screens/tambah_splitbill.dart';
 
 class Splitbill extends StatefulWidget {
   const Splitbill({super.key});
@@ -191,31 +194,11 @@ class _SplitbillState extends State<Splitbill> {
                       ),
           ),
           
+          CustomButton(text: 'Tambah Split Bill', onPressed: (){
+            Utils.pushWithFade(context, TambahSplitbill());
+          }),
           // Add Split Bill Button
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4169E1),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'Tambah Split Bill',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+         ],
       ),
     );
   }
